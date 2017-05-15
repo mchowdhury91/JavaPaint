@@ -15,7 +15,7 @@ import mc.javapaint.ImagePanel;
 
 public abstract class JPTool {
 
-	private ImagePanel imagePanel;
+	protected ImagePanel imagePanel;
 	public static RenderingHints RENDERING_HINTS;
 	private Color strokeColor;
 	private Stroke stroke;
@@ -37,11 +37,11 @@ public abstract class JPTool {
 	}
 	
 	public void draw(Point point, Graphics2D g){
-		
+		imagePanel.update();
 	}
 	
 	public void draw(ArrayList<Point> points, Graphics2D g){
-		
+		imagePanel.update();		
 	}
 	
 	public void setStroke(Stroke stroke){

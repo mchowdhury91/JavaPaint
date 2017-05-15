@@ -25,6 +25,7 @@ public class DrawTool extends JPTool {
 	@Override
 	public void draw(Point point, Graphics2D g) {
 		g.drawLine(point.x,point.y,point.x,point.y);
+		super.draw(point, g);
 	}
 
 	@Override
@@ -36,6 +37,7 @@ public class DrawTool extends JPTool {
 			
 			g.drawLine(p1.x,p1.y,p2.x,p2.y);
 		}
+		super.draw(points, g);
 	}
 
 }

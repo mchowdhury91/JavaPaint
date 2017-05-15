@@ -26,8 +26,10 @@ public class ImagePanel extends JPanel implements Drawable {
 
 	private JLabel imageLabel;
 
-	private BufferedImage originalImage;
+	private BufferedImage activeImage;
 	private BufferedImage newImage;
+	
+	private ArrayList<BufferedImage> layers;
 	
 	private ImageMouseAdapter imageMouseAdapter;
 	private ImageMouseMotionListener imageMouseMotionListener;
@@ -56,11 +58,21 @@ public class ImagePanel extends JPanel implements Drawable {
 		hints.put(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
 		
 		renderingHints = new RenderingHints(hints);
-		
-		
-		originalImage = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_ARGB);
+
 		newImage = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_ARGB);
+		activeImage = newImage;
 		
+		layers = new ArrayList<BufferedImage>();
+		
+		BufferedImage testImage = new BufferedImage(640,480,BufferedImage.TYPE_INT_ARGB);
+		Graphics2D test2D = testImage.createGraphics();
+		
+		test2D.setColor(Color.GREEN);
+		test2D.drawOval(20, 20, 100, 100);
+		test2D.dispose();
+		
+		layers.add(testImage);
+		layers.add(newImage);
 		
 		imageLabel = new JLabel();
 		imageLabel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
@@ -81,7 +93,7 @@ public class ImagePanel extends JPanel implements Drawable {
 	
 	@Override
 	public void draw(Point point){
-		Graphics2D g = newImage.createGraphics();
+		Graphics2D g = activeImage.createGraphics();
 		g.setRenderingHints(renderingHints);
 		g.setColor(strokeColor);
 		g.setStroke(stroke);
@@ -98,7 +110,7 @@ public class ImagePanel extends JPanel implements Drawable {
 	public void draw(ArrayList<Point> points){
 		activeTool.setStroke(stroke);
 		
-		Graphics2D g = newImage.createGraphics();
+		Graphics2D g = activeImage.createGraphics();
 		g.setRenderingHints(renderingHints);
 		g.setColor(strokeColor);
 		g.setStroke(stroke);
@@ -139,19 +151,27 @@ public class ImagePanel extends JPanel implements Drawable {
 	}
 	
 	public BufferedImage getImage(){
-		return newImage;
+		return activeImage;
 	}
 	
 	public ImageMouseMotionListener getIMML(){
 		return imageMouseMotionListener;
 	}
 	
+	public void addLayer(){
+		
+	}
+	
 	public void update(){
-		Graphics2D g = newImage.createGraphics();
+		Graphics2D g = activeImage.createGraphics();
 		g.setRenderingHints(renderingHints);
 		g.setColor(strokeColor);
 		g.setStroke(stroke);
 		activeTool.update(g);
+		
+		for(int i = 0; i < layers.size(); i++){
+			g.drawImage(layers.get(0), 0, 0, WIDTH, HEIGHT, null);
+		}
 		
 		g.dispose();
 	}

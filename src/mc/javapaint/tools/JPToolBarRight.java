@@ -2,6 +2,7 @@ package mc.javapaint.tools;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.Enumeration;
 
 import javax.swing.AbstractButton;
@@ -13,21 +14,30 @@ import mc.javapaint.ImagePanel;
 
 public class JPToolBarRight extends JToolBar{
 
-	private JButton draw, rect;
+	private JButton draw, rect, oval;
+	private int numLayers;
+	
+	ArrayList<JButton> layers;
+	
 	private JPTool activeTool;
 	
 	private DrawTool drawTool;
 	private RectTool rectTool;
+	private OvalTool ovalTool;
+	private ActionListener toolListener;
 	
 	private ImagePanel imagePanel;
 	
 	public JPToolBarRight(ImagePanel imagePanel) {
+		
 		super(JToolBar.VERTICAL);
+		numLayers = 1;
 		this.setFloatable(false);
 		this.imagePanel = imagePanel;
 
 		drawTool = new DrawTool(imagePanel);
 		rectTool = new RectTool(imagePanel);
+		ovalTool = new OvalTool(imagePanel);
 		
 		activeTool = drawTool;
 		initButtons();
@@ -36,18 +46,20 @@ public class JPToolBarRight extends JToolBar{
 		
 		this.add(draw);
 		this.add(rect);
+		this.add(oval);
 	}
 	
 	public void initButtons(){
 		draw = new JButton("Draw");
 		rect = new JButton("Rectangle");
-		
+		oval = new JButton("Oval");
 		ButtonGroup bg = new ButtonGroup();
 		
 		bg.add(draw);
 		bg.add(rect);
+		bg.add(oval);
 		
-		ActionListener toolListener = new ActionListener(){
+		toolListener = new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent e){
 				if(e.getSource() == draw){
@@ -69,6 +81,18 @@ public class JPToolBarRight extends JToolBar{
 							buttons.hasMoreElements();){
 						JButton next = (JButton) buttons.nextElement();
 						if(next.getText() == "Rectangle"){
+							next.setSelected(true);
+						}else{
+							next.setSelected(false);
+						}
+					}
+				}else if(e.getSource() == oval){
+					activeTool = ovalTool;
+					
+					for(Enumeration<AbstractButton> buttons = bg.getElements();
+							buttons.hasMoreElements();){
+						JButton next = (JButton) buttons.nextElement();
+						if(next.getText() == "Oval"){
 							next.setSelected(true);
 						}else{
 							next.setSelected(false);
