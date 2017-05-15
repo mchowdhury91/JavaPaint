@@ -14,7 +14,7 @@ import mc.javapaint.ImagePanel;
 
 public class JPToolBarRight extends JToolBar{
 
-	private JButton drawButton, rectButton, ovalButton, newLayerButton;
+	private JButton drawButton, rectButton, ovalButton, newLayerButton, defaultLayerButton;
 	private int numLayers;
 	
 	ArrayList<JButton> layers;
@@ -50,6 +50,9 @@ public class JPToolBarRight extends JToolBar{
 		this.add(ovalButton);
 		this.add(newLayerButton);
 		
+		
+		imagePanel.getDefaultLayer().setLayerButton(defaultLayerButton);
+		this.add(defaultLayerButton);		
 	}
 	
 	public void initButtons(){
@@ -57,6 +60,7 @@ public class JPToolBarRight extends JToolBar{
 		rectButton = new JButton("Rectangle");
 		ovalButton = new JButton("Oval");
 		newLayerButton = new JButton("+");
+		defaultLayerButton = new JButton("Layer 0");
 		
 		ButtonGroup bg = new ButtonGroup();
 		
@@ -64,6 +68,7 @@ public class JPToolBarRight extends JToolBar{
 		bg.add(rectButton);
 		bg.add(ovalButton);
 		bg.add(newLayerButton);
+		bg.add(defaultLayerButton);
 		
 		toolListener = new ActionListener(){
 			@Override
@@ -106,16 +111,20 @@ public class JPToolBarRight extends JToolBar{
 					}
 				}else if(e.getSource() == newLayerButton){
 					JButton newLayer = new JButton("Layer " + numLayers);
-					numLayers++;
 					
 					bg.add(newLayer);
 					layers.add(newLayer);
 					addLayerButton();
 					newLayer.addActionListener(this);
+					imagePanel.addLayer(numLayers, newLayer);
+					
+					numLayers++;
 				}else{
 					JButton tmpButton = (JButton) e.getSource();
 					String btnText = tmpButton.getText();
 					
+					int index = Character.getNumericValue(btnText.charAt(btnText.length()-1));
+					imagePanel.getLayer(index).makeActive();
 					System.out.println(btnText.charAt(btnText.length()-1));
 				}
 				imagePanel.setActiveTool(activeTool);

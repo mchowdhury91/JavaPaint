@@ -15,6 +15,7 @@ import java.util.Map;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
@@ -26,10 +27,12 @@ public class ImagePanel extends JPanel implements Drawable {
 
 	private JLabel imageLabel;
 
-	private BufferedImage activeImage;
 	private BufferedImage newImage;
 	
-	private ArrayList<BufferedImage> layers;
+	private JPLayer activeLayer;
+	private JPLayer defaultLayer;
+	
+	private ArrayList<JPLayer> layers;
 	
 	private ImageMouseAdapter imageMouseAdapter;
 	private ImageMouseMotionListener imageMouseMotionListener;
@@ -60,19 +63,20 @@ public class ImagePanel extends JPanel implements Drawable {
 		renderingHints = new RenderingHints(hints);
 
 		newImage = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_ARGB);
-		activeImage = newImage;
+		defaultLayer = new JPLayer("Layer 0", newImage, this);
+		activeLayer = defaultLayer;
 		
-		layers = new ArrayList<BufferedImage>();
+		layers = new ArrayList<JPLayer>();
 		
-		BufferedImage testImage = new BufferedImage(640,480,BufferedImage.TYPE_INT_ARGB);
-		Graphics2D test2D = testImage.createGraphics();
-		
-		test2D.setColor(Color.GREEN);
-		test2D.drawOval(20, 20, 100, 100);
-		test2D.dispose();
-		
-		layers.add(testImage);
-		layers.add(newImage);
+//		BufferedImage testImage = new BufferedImage(640,480,BufferedImage.TYPE_INT_ARGB);
+//		Graphics2D test2D = testImage.createGraphics();
+//		
+//		test2D.setColor(Color.GREEN);
+//		test2D.drawOval(20, 20, 100, 100);
+//		test2D.dispose();
+//		
+//		layers.add(new JPLayer("testImage", testImage));
+		layers.add(new JPLayer("newImage", newImage, this));
 		
 		imageLabel = new JLabel();
 		imageLabel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
@@ -93,7 +97,7 @@ public class ImagePanel extends JPanel implements Drawable {
 	
 	@Override
 	public void draw(Point point){
-		Graphics2D g = activeImage.createGraphics();
+		Graphics2D g = activeLayer.getImage().createGraphics();
 		g.setRenderingHints(renderingHints);
 		g.setColor(strokeColor);
 		g.setStroke(stroke);
@@ -110,7 +114,7 @@ public class ImagePanel extends JPanel implements Drawable {
 	public void draw(ArrayList<Point> points){
 		activeTool.setStroke(stroke);
 		
-		Graphics2D g = activeImage.createGraphics();
+		Graphics2D g = activeLayer.getImage().createGraphics();
 		g.setRenderingHints(renderingHints);
 		g.setColor(strokeColor);
 		g.setStroke(stroke);
@@ -151,26 +155,47 @@ public class ImagePanel extends JPanel implements Drawable {
 	}
 	
 	public BufferedImage getImage(){
-		return activeImage;
+		return activeLayer.getImage();
+	}
+	
+	public JPLayer getDefaultLayer(){
+		return defaultLayer;
 	}
 	
 	public ImageMouseMotionListener getIMML(){
 		return imageMouseMotionListener;
 	}
 	
-	public void addLayer(){
+	public void addLayer(int layerNum, JButton layerButton){
+		BufferedImage tmpImage = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_ARGB);
+		JPLayer newLayer = new JPLayer("Layer " + layerNum, tmpImage, this);
+		newLayer.setLayerButton(layerButton);
+		newLayer.setPosition(layerNum);
+		layers.add(newLayer);
 		
 	}
 	
+	public void addLayer(JPLayer layer){
+		layers.add(layer);
+	}
+	
+	public void setActiveLayer(JPLayer layer){
+		activeLayer = layer;
+	}
+	
+	public JPLayer getLayer(int index){
+		return layers.get(index);
+	}
+	
 	public void update(){
-		Graphics2D g = activeImage.createGraphics();
+		Graphics2D g = newImage.createGraphics();
 		g.setRenderingHints(renderingHints);
 		g.setColor(strokeColor);
 		g.setStroke(stroke);
 		activeTool.update(g);
 		
 		for(int i = 0; i < layers.size(); i++){
-			g.drawImage(layers.get(0), 0, 0, WIDTH, HEIGHT, null);
+			g.drawImage(layers.get(i).getImage(), 0, 0, WIDTH, HEIGHT, null);
 		}
 		
 		g.dispose();
