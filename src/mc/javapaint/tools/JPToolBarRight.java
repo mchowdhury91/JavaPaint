@@ -14,7 +14,7 @@ import mc.javapaint.ImagePanel;
 
 public class JPToolBarRight extends JToolBar{
 
-	private JButton draw, rect, oval;
+	private JButton drawButton, rectButton, ovalButton, newLayerButton;
 	private int numLayers;
 	
 	ArrayList<JButton> layers;
@@ -32,6 +32,7 @@ public class JPToolBarRight extends JToolBar{
 		
 		super(JToolBar.VERTICAL);
 		numLayers = 1;
+		layers = new ArrayList<>();
 		this.setFloatable(false);
 		this.imagePanel = imagePanel;
 
@@ -42,27 +43,32 @@ public class JPToolBarRight extends JToolBar{
 		activeTool = drawTool;
 		initButtons();
 		
-		draw.setSelected(true);
+		drawButton.setSelected(true);
 		
-		this.add(draw);
-		this.add(rect);
-		this.add(oval);
+		this.add(drawButton);
+		this.add(rectButton);
+		this.add(ovalButton);
+		this.add(newLayerButton);
+		
 	}
 	
 	public void initButtons(){
-		draw = new JButton("Draw");
-		rect = new JButton("Rectangle");
-		oval = new JButton("Oval");
+		drawButton = new JButton("Draw");
+		rectButton = new JButton("Rectangle");
+		ovalButton = new JButton("Oval");
+		newLayerButton = new JButton("+");
+		
 		ButtonGroup bg = new ButtonGroup();
 		
-		bg.add(draw);
-		bg.add(rect);
-		bg.add(oval);
+		bg.add(drawButton);
+		bg.add(rectButton);
+		bg.add(ovalButton);
+		bg.add(newLayerButton);
 		
 		toolListener = new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent e){
-				if(e.getSource() == draw){
+				if(e.getSource() == drawButton){
 					activeTool = drawTool;
 					
 					for(Enumeration<AbstractButton> buttons = bg.getElements();
@@ -74,7 +80,7 @@ public class JPToolBarRight extends JToolBar{
 							next.setSelected(false);
 						}
 					}
-				}else if(e.getSource() == rect){
+				}else if(e.getSource() == rectButton){
 					activeTool = rectTool;
 					
 					for(Enumeration<AbstractButton> buttons = bg.getElements();
@@ -86,7 +92,7 @@ public class JPToolBarRight extends JToolBar{
 							next.setSelected(false);
 						}
 					}
-				}else if(e.getSource() == oval){
+				}else if(e.getSource() == ovalButton){
 					activeTool = ovalTool;
 					
 					for(Enumeration<AbstractButton> buttons = bg.getElements();
@@ -98,8 +104,20 @@ public class JPToolBarRight extends JToolBar{
 							next.setSelected(false);
 						}
 					}
+				}else if(e.getSource() == newLayerButton){
+					JButton newLayer = new JButton("Layer " + numLayers);
+					numLayers++;
+					
+					bg.add(newLayer);
+					layers.add(newLayer);
+					addLayerButton();
+					newLayer.addActionListener(this);
+				}else{
+					JButton tmpButton = (JButton) e.getSource();
+					String btnText = tmpButton.getText();
+					
+					System.out.println(btnText.charAt(btnText.length()-1));
 				}
-				
 				imagePanel.setActiveTool(activeTool);
 			}
 		};
@@ -117,5 +135,11 @@ public class JPToolBarRight extends JToolBar{
 		return activeTool;
 	}
 		
-
+	public void addLayerButton(){
+		if(!layers.isEmpty()){
+			for(JButton button : layers){
+				this.add(button);
+			}
+		}
+	}
 }
