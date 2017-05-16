@@ -27,7 +27,7 @@ public class ImagePanel extends JPanel implements Drawable {
 
 	private JLabel imageLabel;
 
-	private BufferedImage newImage;
+	private BufferedImage displayImage;
 	
 	private JPLayer activeLayer;
 	private JPLayer defaultLayer;
@@ -62,25 +62,17 @@ public class ImagePanel extends JPanel implements Drawable {
 		
 		renderingHints = new RenderingHints(hints);
 
-		newImage = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_ARGB);
-		defaultLayer = new JPLayer("Layer 0", newImage, this);
+		displayImage = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_ARGB);
+		defaultLayer = new JPLayer("Layer 0", new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_ARGB), this);
 		activeLayer = defaultLayer;
 		
 		layers = new ArrayList<JPLayer>();
-		
-//		BufferedImage testImage = new BufferedImage(640,480,BufferedImage.TYPE_INT_ARGB);
-//		Graphics2D test2D = testImage.createGraphics();
-//		
-//		test2D.setColor(Color.GREEN);
-//		test2D.drawOval(20, 20, 100, 100);
-//		test2D.dispose();
-//		
-//		layers.add(new JPLayer("testImage", testImage));
-		layers.add(new JPLayer("newImage", newImage, this));
+	
+		layers.add(defaultLayer);
 		
 		imageLabel = new JLabel();
 		imageLabel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-		imageLabel.setIcon(new ImageIcon(newImage));
+		imageLabel.setIcon(new ImageIcon(displayImage));
 		
 		imageMouseAdapter = new ImageMouseAdapter(this);
 		imageMouseMotionListener = new ImageMouseMotionListener(this);
@@ -158,6 +150,10 @@ public class ImagePanel extends JPanel implements Drawable {
 		return activeLayer.getImage();
 	}
 	
+	public BufferedImage getDisplayImage(){
+		return displayImage;
+	}
+	
 	public JPLayer getDefaultLayer(){
 		return defaultLayer;
 	}
@@ -183,16 +179,19 @@ public class ImagePanel extends JPanel implements Drawable {
 		activeLayer = layer;
 	}
 	
+	public JPLayer getActiveLayer(){
+		return activeLayer;
+	}
+	
 	public JPLayer getLayer(int index){
 		return layers.get(index);
 	}
 	
 	public void update(){
-		Graphics2D g = newImage.createGraphics();
+		Graphics2D g = displayImage.createGraphics();
 		g.setRenderingHints(renderingHints);
 		g.setColor(strokeColor);
 		g.setStroke(stroke);
-		activeTool.update(g);
 		
 		for(int i = 0; i < layers.size(); i++){
 			g.drawImage(layers.get(i).getImage(), 0, 0, WIDTH, HEIGHT, null);
