@@ -28,175 +28,191 @@ public class ImagePanel extends JPanel implements Drawable {
 	private JLabel imageLabel;
 
 	private BufferedImage displayImage;
+
+	private GUI gui;
+	
+	private final BufferedImage BLANK_IMAGE = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_ARGB);
 	
 	private JPLayer activeLayer;
 	private JPLayer defaultLayer;
-	
+
 	private ArrayList<JPLayer> layers;
-	
+
 	private ImageMouseAdapter imageMouseAdapter;
 	private ImageMouseMotionListener imageMouseMotionListener;
-	
-	public static final int WIDTH = 640,
-						 	 HEIGHT = 480;
-	
+
+	public static final int WIDTH = 640, HEIGHT = 480;
+
 	private int lastPointIndex;
 	private RenderingHints renderingHints;
 	private Color strokeColor;
 	private Stroke stroke;
 	private JPTool activeTool;
-	
-	public ImagePanel() {
+
+	public ImagePanel(GUI gui) {
 		super(new GridBagLayout());
-		this.setBorder(new EmptyBorder(0,2,2,2));
-		this.setSize(640,480);
+		this.setBorder(new EmptyBorder(0, 2, 2, 2));
+		this.setSize(640, 480);
+
+		this.gui = gui;
 		lastPointIndex = 0;
 		strokeColor = Color.BLACK;
 		stroke = new BasicStroke(6, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 1.7f);
-		
+
 		Map<Key, Object> hints = new HashMap<RenderingHints.Key, Object>();
-		
+
 		hints.put(RenderingHints.KEY_DITHERING, RenderingHints.VALUE_DITHER_ENABLE);
 		hints.put(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		hints.put(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-		
+
 		renderingHints = new RenderingHints(hints);
 
 		displayImage = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_ARGB);
 		defaultLayer = new JPLayer("Layer 0", new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_ARGB), this);
 		activeLayer = defaultLayer;
-		
+
 		layers = new ArrayList<JPLayer>();
-	
+
 		layers.add(defaultLayer);
-		
+
 		imageLabel = new JLabel();
 		imageLabel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 		imageLabel.setIcon(new ImageIcon(displayImage));
-		
+
 		imageMouseAdapter = new ImageMouseAdapter(this);
 		imageMouseMotionListener = new ImageMouseMotionListener(this);
-		
-		imageLabel.addMouseListener(imageMouseAdapter);		
+
+		imageLabel.addMouseListener(imageMouseAdapter);
 		imageLabel.addMouseMotionListener(imageMouseMotionListener);
-		
+
 		activeTool = new DrawTool(this);
-		
+
 		this.setBackground(Color.WHITE);
 		this.add(imageLabel);
-		
+
 	}
-	
+
 	@Override
-	public void draw(Point point){
+	public void draw(Point point) {
 		Graphics2D g = activeLayer.getImage().createGraphics();
 		g.setRenderingHints(renderingHints);
 		g.setColor(strokeColor);
 		g.setStroke(stroke);
-		
+
 		activeTool.snapShot();
-		
+
 		activeTool.draw(point, g);
-		
+
 		g.dispose();
 		imageLabel.repaint();
 	}
-	
+
 	@Override
-	public void draw(ArrayList<Point> points){
-		activeTool.setStroke(stroke);
-		
+	public void draw(ArrayList<Point> points) {
 		Graphics2D g = activeLayer.getImage().createGraphics();
 		g.setRenderingHints(renderingHints);
 		g.setColor(strokeColor);
 		g.setStroke(stroke);
-		
-		activeTool.draw(points, g);		
+
+		activeTool.setStroke(stroke);
+
+		activeTool.draw(points, g);
 		g.dispose();
-		
+
 		imageLabel.repaint();
 	}
-	
-	public void clearPoints(){
+
+	public void clearPoints() {
 		imageMouseMotionListener.clearPoints();
 		lastPointIndex = 0;
 	}
-	
-	public void setStrokeColor(Color c){
+
+	public void setStrokeColor(Color c) {
 		strokeColor = c;
 	}
-	
-	public void setStroke(Stroke stroke){
+
+	public void setStroke(Stroke stroke) {
 		this.stroke = stroke;
 	}
-	
-	public Color getStrokeColor(){
+
+	public Color getStrokeColor() {
 		return strokeColor;
 	}
-	
-	public Stroke getStroke(){
+
+	public Stroke getStroke() {
 		return stroke;
 	}
-	
-	public int getLastPointIndex(){
+
+	public int getLastPointIndex() {
 		return lastPointIndex;
 	}
-	
-	public void setActiveTool(JPTool tool){
+
+	public void setActiveTool(JPTool tool) {
 		activeTool = tool;
 	}
-	
-	public BufferedImage getImage(){
+
+	public BufferedImage getImage() {
 		return activeLayer.getImage();
 	}
-	
-	public BufferedImage getDisplayImage(){
+
+	public BufferedImage getDisplayImage() {
 		return displayImage;
 	}
-	
-	public JPLayer getDefaultLayer(){
+
+	public JPLayer getDefaultLayer() {
 		return defaultLayer;
 	}
-	
-	public ImageMouseMotionListener getIMML(){
+
+	public ImageMouseMotionListener getIMML() {
 		return imageMouseMotionListener;
 	}
-	
-	public void addLayer(int layerNum, JButton layerButton){
+
+	public void addLayer(int layerNum, JButton layerButton) {
 		BufferedImage tmpImage = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_ARGB);
 		JPLayer newLayer = new JPLayer("Layer " + layerNum, tmpImage, this);
 		newLayer.setLayerButton(layerButton);
 		newLayer.setPosition(layerNum);
 		layers.add(newLayer);
-		
+
 	}
-	
-	public void addLayer(JPLayer layer){
+
+	public void addLayer(JPLayer layer) {
 		layers.add(layer);
 	}
-	
-	public void setActiveLayer(JPLayer layer){
+
+	public void setActiveLayer(JPLayer layer) {
 		activeLayer = layer;
 	}
-	
-	public JPLayer getActiveLayer(){
+
+	public JPLayer getActiveLayer() {
 		return activeLayer;
 	}
-	
-	public JPLayer getLayer(int index){
+
+	public JPLayer getLayer(int index) {
 		return layers.get(index);
 	}
 	
-	public void update(){
+	public GUI getGUI(){
+		return gui;
+	}
+
+	public void update() {
 		Graphics2D g = displayImage.createGraphics();
 		g.setRenderingHints(renderingHints);
 		g.setColor(strokeColor);
 		g.setStroke(stroke);
+
 		
-		for(int i = 0; i < layers.size(); i++){
+		displayImage.setData(BLANK_IMAGE.getData());
+
+		// g.drawImage(new
+		// BufferedImage(WIDTH,HEIGHT,BufferedImage.TYPE_INT_ARGB), 0, 0, WIDTH,
+		// HEIGHT, null);
+
+		for (int i = 0; i < layers.size(); i++) {
 			g.drawImage(layers.get(i).getImage(), 0, 0, WIDTH, HEIGHT, null);
 		}
-		
+
 		g.dispose();
 	}
 }

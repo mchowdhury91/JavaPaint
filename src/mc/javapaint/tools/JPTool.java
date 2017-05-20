@@ -20,6 +20,7 @@ public abstract class JPTool {
 	private Color strokeColor;
 	private Stroke stroke;
 	private int lastPointIndex;
+	public int id = 0;
 	
 	public JPTool(ImagePanel imagePanel){
 		this.imagePanel = imagePanel;

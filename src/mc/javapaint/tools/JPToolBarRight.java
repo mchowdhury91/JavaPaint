@@ -14,7 +14,7 @@ import mc.javapaint.ImagePanel;
 
 public class JPToolBarRight extends JToolBar{
 
-	private JButton drawButton, rectButton, ovalButton, newLayerButton, defaultLayerButton;
+	private JButton drawButton, eraserButton, rectButton, ovalButton, newLayerButton, defaultLayerButton;
 	private int numLayers;
 	
 	ArrayList<JButton> layers;
@@ -22,6 +22,7 @@ public class JPToolBarRight extends JToolBar{
 	private JPTool activeTool;
 	
 	private DrawTool drawTool;
+	private EraserTool eraserTool;
 	private RectTool rectTool;
 	private OvalTool ovalTool;
 	private ActionListener toolListener;
@@ -37,6 +38,7 @@ public class JPToolBarRight extends JToolBar{
 		this.imagePanel = imagePanel;
 
 		drawTool = new DrawTool(imagePanel);
+		eraserTool = new EraserTool(imagePanel);
 		rectTool = new RectTool(imagePanel);
 		ovalTool = new OvalTool(imagePanel);
 		
@@ -46,6 +48,7 @@ public class JPToolBarRight extends JToolBar{
 		drawButton.setSelected(true);
 		
 		this.add(drawButton);
+		this.add(eraserButton);
 		this.add(rectButton);
 		this.add(ovalButton);
 		this.add(newLayerButton);
@@ -57,6 +60,7 @@ public class JPToolBarRight extends JToolBar{
 	
 	public void initButtons(){
 		drawButton = new JButton("Draw");
+		eraserButton = new JButton("Eraser");
 		rectButton = new JButton("Rectangle");
 		ovalButton = new JButton("Oval");
 		newLayerButton = new JButton("+");
@@ -65,6 +69,7 @@ public class JPToolBarRight extends JToolBar{
 		ButtonGroup bg = new ButtonGroup();
 		
 		bg.add(drawButton);
+		bg.add(eraserButton);
 		bg.add(rectButton);
 		bg.add(ovalButton);
 		bg.add(newLayerButton);
@@ -85,6 +90,18 @@ public class JPToolBarRight extends JToolBar{
 							next.setSelected(false);
 						}
 					}
+				}else if(e.getSource() == eraserButton){
+					activeTool = eraserTool;
+					
+					for(Enumeration<AbstractButton> buttons = bg.getElements();
+							buttons.hasMoreElements();){
+						JButton next = (JButton) buttons.nextElement();
+						if(next.getText() == "Eraser"){
+							next.setSelected(true);
+						}else{
+							next.setSelected(false);
+						}
+					}					
 				}else if(e.getSource() == rectButton){
 					activeTool = rectTool;
 					
@@ -123,8 +140,10 @@ public class JPToolBarRight extends JToolBar{
 					JButton tmpButton = (JButton) e.getSource();
 					String btnText = tmpButton.getText();
 					
+					// TODO: fix index so it works with multiple digits
 					int index = Character.getNumericValue(btnText.charAt(btnText.length()-1));
 					imagePanel.getLayer(index).makeActive();
+					imagePanel.getGUI().getStatusLabel().setText(imagePanel.getLayer(index).getName());
 					System.out.println(btnText.charAt(btnText.length()-1));
 				}
 				imagePanel.setActiveTool(activeTool);
