@@ -1,6 +1,10 @@
 package mc.javapaint;
 
+import java.awt.Color;
+import java.awt.Graphics2D;
 import java.awt.Point;
+import java.awt.RenderingHints;
+import java.awt.Stroke;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
@@ -10,13 +14,13 @@ import mc.javapaint.utils.JPUtils;
 
 public class ImageMouseMotionListener implements MouseMotionListener {
 
-	private Drawable drawable;
+	private ImagePanel imagePanel;
 	private ArrayList<Point> points;
 	private BufferedImage originalImage;
 	
-	public ImageMouseMotionListener(Drawable drawable) {
+	public ImageMouseMotionListener(ImagePanel drawable) {
 		super();
-		this.drawable = drawable;
+		this.imagePanel = drawable;
 		points = new ArrayList<Point>();
 	}
 
@@ -24,7 +28,7 @@ public class ImageMouseMotionListener implements MouseMotionListener {
 	public void mouseDragged(MouseEvent e) {
 		// TODO Auto-generated method stub
 		points.add(e.getPoint());
-		drawable.draw(points);
+		imagePanel.draw(points);
 	}
 
 	@Override
@@ -32,12 +36,15 @@ public class ImageMouseMotionListener implements MouseMotionListener {
 		
 	}
 	
-	public void clearPoints(){
+	public void updateActions(Graphics2D g, RenderingHints renderingHints, Stroke stroke, Color strokeColor){
+		ArrayList<Point> pointsClone = new ArrayList<Point>(points);
+		JPAction action = new JPAction(imagePanel.getActiveLayer(), imagePanel);
+		imagePanel.addAction(action);
 		points.clear();
 	}
 	
 	public void snapShot(){
-		originalImage = JPUtils.copyImage(drawable.getImage());
+		originalImage = JPUtils.copyImage(imagePanel.getImage());
 	}
 
 }

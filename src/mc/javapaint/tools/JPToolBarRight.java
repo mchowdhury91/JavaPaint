@@ -11,10 +11,11 @@ import javax.swing.JButton;
 import javax.swing.JToolBar;
 
 import mc.javapaint.ImagePanel;
+import mc.javapaint.JPAction;
 
 public class JPToolBarRight extends JToolBar{
 
-	private JButton drawButton, eraserButton, rectButton, ovalButton, newLayerButton, defaultLayerButton;
+	private JButton drawButton, eraserButton, rectButton, ovalButton, undoButton, newLayerButton, defaultLayerButton;
 	private int numLayers;
 	
 	ArrayList<JButton> layers;
@@ -51,8 +52,8 @@ public class JPToolBarRight extends JToolBar{
 		this.add(eraserButton);
 		this.add(rectButton);
 		this.add(ovalButton);
+		this.add(undoButton);
 		this.add(newLayerButton);
-		
 		
 		imagePanel.getDefaultLayer().setLayerButton(defaultLayerButton);
 		this.add(defaultLayerButton);		
@@ -63,6 +64,7 @@ public class JPToolBarRight extends JToolBar{
 		eraserButton = new JButton("Eraser");
 		rectButton = new JButton("Rectangle");
 		ovalButton = new JButton("Oval");
+		undoButton = new JButton("Undo");
 		newLayerButton = new JButton("+");
 		defaultLayerButton = new JButton("Layer 0");
 		
@@ -72,6 +74,7 @@ public class JPToolBarRight extends JToolBar{
 		bg.add(eraserButton);
 		bg.add(rectButton);
 		bg.add(ovalButton);
+		bg.add(undoButton);
 		bg.add(newLayerButton);
 		bg.add(defaultLayerButton);
 		
@@ -125,6 +128,11 @@ public class JPToolBarRight extends JToolBar{
 						}else{
 							next.setSelected(false);
 						}
+					}
+				}else if(e.getSource() == undoButton){
+					JPAction action = imagePanel.popHistory();
+					if(action != null){
+						action.undo();
 					}
 				}else if(e.getSource() == newLayerButton){
 					JButton newLayer = new JButton("Layer " + numLayers);

@@ -29,9 +29,6 @@ public class GUI {
 	 *       imageLabel has a BufferedImage as its icon
 	 */
 	
-
-	
-	
 	public GUI() {
 		initFrame();
 		
