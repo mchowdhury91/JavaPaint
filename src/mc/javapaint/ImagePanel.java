@@ -180,6 +180,10 @@ public class ImagePanel extends JPanel implements Drawable {
 		return defaultLayer;
 	}
 
+	public RenderingHints getRenderingHints(){
+		return renderingHints;
+	}
+	
 	public ImageMouseMotionListener getIMML() {
 		return imageMouseMotionListener;
 	}
