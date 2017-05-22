@@ -142,6 +142,7 @@ public class ImagePanel extends JPanel implements Drawable {
 		
 		imageMouseMotionListener.updateActions(g, renderingHints, stroke, strokeColor);
 		lastPointIndex = 0;
+		activeTool.resetLastPointIndex();
 	}
 
 	public void setStrokeColor(Color c) {
@@ -182,6 +183,10 @@ public class ImagePanel extends JPanel implements Drawable {
 
 	public RenderingHints getRenderingHints(){
 		return renderingHints;
+	}
+	
+	public JPTool getActiveTool(){
+		return activeTool;
 	}
 	
 	public ImageMouseMotionListener getIMML() {

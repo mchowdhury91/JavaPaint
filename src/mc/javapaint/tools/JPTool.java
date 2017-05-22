@@ -57,4 +57,11 @@ public abstract class JPTool {
 		
 	}
 
+	public void resetLastPointIndex(){
+		lastPointIndex = 0;
+	}
+	
+	public int getLastPointIndex(){
+		return lastPointIndex;
+	}	
 }

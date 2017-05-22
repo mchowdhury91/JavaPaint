@@ -21,6 +21,8 @@ public class ImageMouseAdapter extends MouseAdapter{
 		JPLayer activeLayer = imagePanel.getActiveLayer();
 		activeLayer.addImage(new BufferedImage(imagePanel.WIDTH, imagePanel.HEIGHT, BufferedImage.TYPE_INT_ARGB));
 		imagePanel.draw(e.getPoint());
+		
+		System.out.println("LAST POINT INDEX: " + imagePanel.getActiveTool().getLastPointIndex());
 	}
 
 	@Override

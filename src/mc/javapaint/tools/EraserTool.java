@@ -27,6 +27,7 @@ public class EraserTool extends JPTool {
 		id = 1;
 		transparentImage = new BufferedImage(ImagePanel.WIDTH, ImagePanel.HEIGHT, BufferedImage.TYPE_INT_ARGB);
 		iP = imagePanel;
+		lastPointIndex = 0;
 	}
 	
 	@Override
@@ -68,9 +69,10 @@ public class EraserTool extends JPTool {
 		
 		JPLayer layer = iP.getActiveLayer();
 		
-		for(int i = 0; i < points.size() - 1; i++){
-			Point p1 = points.get(i);
-			Point p2 = points.get(i+1);			Iterator<BufferedImage> itr = layer.getIterator();
+//		for(int i = 0; i < points.size() - 1; i++){
+		try{
+			Point p1 = points.get(points.size() - 2);
+			Point p2 = points.get(points.size() - 1);			Iterator<BufferedImage> itr = layer.getIterator();
 			while(itr.hasNext()){
 				BufferedImage tempImage = itr.next();
 				Graphics2D g2 = tempImage.createGraphics();
@@ -83,8 +85,14 @@ public class EraserTool extends JPTool {
 				g2.dispose();
 				
 			}
-
+			lastPointIndex = points.size()-2;
+		}catch(IndexOutOfBoundsException e){
+			System.out.println("Index out of bounds");
+			return;
 		}
+//		}
 	}
+	
+
 
 }
