@@ -12,6 +12,7 @@ import java.util.Iterator;
 
 import mc.javapaint.ImagePanel;
 import mc.javapaint.JPLayer;
+import mc.javapaint.utils.JPUtils;
 
 public class EraserTool extends JPTool {
 
@@ -28,6 +29,7 @@ public class EraserTool extends JPTool {
 		transparentImage = new BufferedImage(ImagePanel.WIDTH, ImagePanel.HEIGHT, BufferedImage.TYPE_INT_ARGB);
 		iP = imagePanel;
 		lastPointIndex = 0;
+		id = JPTool.ERASER;
 	}
 	
 	@Override
@@ -70,7 +72,8 @@ public class EraserTool extends JPTool {
 		JPLayer layer = iP.getActiveLayer();
 		
 //		for(int i = 0; i < points.size() - 1; i++){
-		try{
+//		try{
+		if(points.size() - 2 >= 0){
 			Point p1 = points.get(points.size() - 2);
 			Point p2 = points.get(points.size() - 1);			Iterator<BufferedImage> itr = layer.getIterator();
 			while(itr.hasNext()){
@@ -81,15 +84,20 @@ public class EraserTool extends JPTool {
 				g2.setComposite(AlphaComposite.Clear);
 				g2.drawLine(p1.x,p1.y,p2.x,p2.y);
 				super.draw(points, g2);
+				
+				if(JPUtils.isTransparent(tempImage) && !tempImage.equals(layer.getBottomImage())){
+					itr.remove();
+				}
+				
 				g2.setComposite(AlphaComposite.SrcOver);
 				g2.dispose();
 				
 			}
-			lastPointIndex = points.size()-2;
-		}catch(IndexOutOfBoundsException e){
-			System.out.println("Index out of bounds");
-			return;
 		}
+//		}catch(IndexOutOfBoundsException e){
+//			System.out.println("Index out of bounds");
+//			return;
+//		}
 //		}
 	}
 	

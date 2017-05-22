@@ -22,6 +22,8 @@ public abstract class JPTool {
 	private int lastPointIndex;
 	public int id = 0;
 	
+	public static final int ERASER = -1;
+	
 	public JPTool(ImagePanel imagePanel){
 		this.imagePanel = imagePanel;
 		Map<Key, Object> hints = new HashMap<RenderingHints.Key, Object>();
