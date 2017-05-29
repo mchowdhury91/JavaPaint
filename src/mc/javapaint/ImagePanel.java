@@ -2,6 +2,7 @@ package mc.javapaint;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Graphics2D;
 import java.awt.GridBagLayout;
 import java.awt.Point;
@@ -83,6 +84,7 @@ public class ImagePanel extends JPanel implements Drawable {
 		imageLabel = new JLabel();
 		imageLabel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 		imageLabel.setIcon(new ImageIcon(displayImage));
+		
 
 		imageMouseAdapter = new ImageMouseAdapter(this);
 		imageMouseMotionListener = new ImageMouseMotionListener(this);
@@ -91,7 +93,8 @@ public class ImagePanel extends JPanel implements Drawable {
 		imageLabel.addMouseMotionListener(imageMouseMotionListener);
 
 		activeTool = new DrawTool(this);
-
+		imageLabel.setCursor(activeTool.getCursor());
+		
 		this.setBackground(Color.WHITE);
 		this.add(imageLabel);
 
@@ -167,6 +170,7 @@ public class ImagePanel extends JPanel implements Drawable {
 
 	public void setActiveTool(JPTool tool) {
 		activeTool = tool;
+		imageLabel.setCursor(activeTool.getCursor());
 	}
 
 	public BufferedImage getImage() {
@@ -206,6 +210,23 @@ public class ImagePanel extends JPanel implements Drawable {
 		layers.add(layer);
 	}
 
+	public void removeLayer(JPLayer layer){
+		if(layer == defaultLayer){
+			System.out.println("Can't delete default layer!");
+			return;
+		}
+		
+		if(getActiveLayer() == layer){
+			defaultLayer.makeActive();
+		}
+		
+		JButton layerButton = layer.getLayerButton();
+		
+		gui.getJPToolBarRight().removeLayerButton(layerButton);
+		layers.remove(layer);
+		draw();
+	}
+	
 	public void setActiveLayer(JPLayer layer) {
 		activeLayer = layer;
 	}
@@ -216,6 +237,18 @@ public class ImagePanel extends JPanel implements Drawable {
 
 	public JPLayer getLayer(int index) {
 		return layers.get(index);
+	}
+	
+	public JPLayer getLayer(String layerName){
+		Iterator<JPLayer> itr = layers.iterator();
+		while(itr.hasNext()){
+			JPLayer tmpLayer = itr.next();
+			if(tmpLayer.getName().equals(layerName)){
+				return tmpLayer;
+			}
+		}
+		
+		return null;
 	}
 	
 	public void addAction(JPAction action){

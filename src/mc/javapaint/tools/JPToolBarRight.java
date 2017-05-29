@@ -1,5 +1,6 @@
 package mc.javapaint.tools;
 
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -27,6 +28,7 @@ public class JPToolBarRight extends JToolBar{
 	private RectTool rectTool;
 	private OvalTool ovalTool;
 	private ActionListener toolListener;
+	private static final Color SELECTED_LAYER_COLOR = Color.decode("#A5D6C2");
 	
 	private ImagePanel imagePanel;
 	
@@ -69,6 +71,7 @@ public class JPToolBarRight extends JToolBar{
 		defaultLayerButton = new JButton("Layer 0");
 		
 		ButtonGroup bg = new ButtonGroup();
+		ButtonGroup lbg = new ButtonGroup();
 		
 		bg.add(drawButton);
 		bg.add(eraserButton);
@@ -76,59 +79,32 @@ public class JPToolBarRight extends JToolBar{
 		bg.add(ovalButton);
 		bg.add(undoButton);
 		bg.add(newLayerButton);
-		bg.add(defaultLayerButton);
+		lbg.add(defaultLayerButton);
+		defaultLayerButton.setSelected(true);
+		defaultLayerButton.setBackground(SELECTED_LAYER_COLOR);
 		
 		toolListener = new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent e){
 				if(e.getSource() == drawButton){
 					activeTool = drawTool;
-					
-					for(Enumeration<AbstractButton> buttons = bg.getElements();
-							buttons.hasMoreElements();){
-						JButton next = (JButton) buttons.nextElement();
-						if(next.getText() == "Draw"){
-							next.setSelected(true);
-						}else{
-							next.setSelected(false);
-						}
-					}
+					JButton srcButton = (JButton) e.getSource();
+					setExclusiveSelected(bg, srcButton.getText());
 				}else if(e.getSource() == eraserButton){
 					activeTool = eraserTool;
 					
-					for(Enumeration<AbstractButton> buttons = bg.getElements();
-							buttons.hasMoreElements();){
-						JButton next = (JButton) buttons.nextElement();
-						if(next.getText() == "Eraser"){
-							next.setSelected(true);
-						}else{
-							next.setSelected(false);
-						}
-					}					
+					JButton srcButton = (JButton) e.getSource();
+					setExclusiveSelected(bg, srcButton.getText());				
 				}else if(e.getSource() == rectButton){
 					activeTool = rectTool;
 					
-					for(Enumeration<AbstractButton> buttons = bg.getElements();
-							buttons.hasMoreElements();){
-						JButton next = (JButton) buttons.nextElement();
-						if(next.getText() == "Rectangle"){
-							next.setSelected(true);
-						}else{
-							next.setSelected(false);
-						}
-					}
+					JButton srcButton = (JButton) e.getSource();
+					setExclusiveSelected(bg, srcButton.getText());
 				}else if(e.getSource() == ovalButton){
 					activeTool = ovalTool;
 					
-					for(Enumeration<AbstractButton> buttons = bg.getElements();
-							buttons.hasMoreElements();){
-						JButton next = (JButton) buttons.nextElement();
-						if(next.getText() == "Oval"){
-							next.setSelected(true);
-						}else{
-							next.setSelected(false);
-						}
-					}
+					JButton srcButton = (JButton) e.getSource();
+					setExclusiveSelected(bg, srcButton.getText());
 				}else if(e.getSource() == undoButton){
 					JPAction action = imagePanel.popHistory();
 					if(action != null){
@@ -137,7 +113,7 @@ public class JPToolBarRight extends JToolBar{
 				}else if(e.getSource() == newLayerButton){
 					JButton newLayer = new JButton("Layer " + numLayers);
 					
-					bg.add(newLayer);
+					lbg.add(newLayer);
 					layers.add(newLayer);
 					addLayerButton();
 					newLayer.addActionListener(this);
@@ -148,11 +124,13 @@ public class JPToolBarRight extends JToolBar{
 					JButton tmpButton = (JButton) e.getSource();
 					String btnText = tmpButton.getText();
 					
-					// TODO: fix index so it works with multiple digits
-					int index = Character.getNumericValue(btnText.charAt(btnText.length()-1));
-					imagePanel.getLayer(index).makeActive();
-					imagePanel.getGUI().getStatusLabel().setText(imagePanel.getLayer(index).getName());
-					System.out.println(btnText.charAt(btnText.length()-1));
+					imagePanel.getLayer(btnText).makeActive();
+					tmpButton.setSelected(true);
+					//imagePanel.getGUI().getStatusLabel().setText(imagePanel.getLayer(index).getName());
+					
+					JButton srcButton = (JButton) e.getSource();
+					
+					setExclusiveSelected(lbg, srcButton.getText(), Color.decode("#A5D6C2"));
 				}
 				imagePanel.setActiveTool(activeTool);
 			}
@@ -164,7 +142,47 @@ public class JPToolBarRight extends JToolBar{
 			JButton next = (JButton) buttons.nextElement();
 			next.addActionListener(toolListener);
 		}
+
+		for(Enumeration<AbstractButton> buttons = lbg.getElements();
+				buttons.hasMoreElements();){
+			JButton next = (JButton) buttons.nextElement();
+			next.addActionListener(toolListener);
+		}
 		
+	}
+	
+	public void setExclusiveSelected(ButtonGroup bg, String buttonText){
+		for(Enumeration<AbstractButton> buttons = bg.getElements();
+				buttons.hasMoreElements();){
+			JButton next = (JButton) buttons.nextElement();
+			if(next.getText() == buttonText){
+				next.setSelected(true);
+			}else{
+				next.setSelected(false);
+			}
+		}
+	}
+
+	public void setExclusiveSelected(ButtonGroup bg, String buttonText, Color color){
+		for(Enumeration<AbstractButton> buttons = bg.getElements();
+				buttons.hasMoreElements();){
+			JButton next = (JButton) buttons.nextElement();
+			if(next.getText() == buttonText){
+				next.setSelected(true);
+				next.setBackground(color);
+			}else{
+				next.setSelected(false);
+				next.setBackground(null);
+			}
+		}
+	}	
+	
+	public void removeLayerButton(JButton layerButton){
+		this.remove(layerButton);
+		layers.remove(layerButton);
+		defaultLayerButton.setSelected(true);
+		defaultLayerButton.setBackground(SELECTED_LAYER_COLOR);
+		this.repaint();
 	}
 	
 	public JPTool getActiveTool(){

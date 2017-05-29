@@ -60,5 +60,9 @@ public class GUI {
 	public JPStatusLabel getStatusLabel(){
 		return statusLabel;
 	}
+	
+	public JPToolBarRight getJPToolBarRight(){
+		return jpToolBarRight;
+	}
 
 }

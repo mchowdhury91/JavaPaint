@@ -23,6 +23,7 @@ import javax.swing.event.ChangeListener;
 import javax.swing.text.DefaultFormatter;
 
 import mc.javapaint.ImagePanel;
+import mc.javapaint.JPLayer;
 
 
 public class JPToolBarTop extends JToolBar {
@@ -30,6 +31,7 @@ public class JPToolBarTop extends JToolBar {
 	private Color strokeColor;
 	private Stroke stroke;
 	private JButton colorButton;
+	private JButton deleteLayerButton;
 	private BufferedImage colorSample;
 	private ImagePanel imagePanel;
 	
@@ -38,7 +40,7 @@ public class JPToolBarTop extends JToolBar {
 		this.setFloatable(false);
 		strokeColor = Color.BLACK;
 		this.imagePanel = imagePanel;
-		initColorButton();
+		initButtons();
 		initBrushSizeSpinner();
 	}
 	
@@ -64,6 +66,29 @@ public class JPToolBarTop extends JToolBar {
 		colorButton.setIcon(new ImageIcon(colorSample));
 		colorButton.addActionListener(colorListener);
 		this.add(colorButton);		
+	}
+	
+	private void initDeleteLayerButton(){
+		deleteLayerButton = new JButton("Delete Current Layer");
+		
+		ActionListener deleteLayerListener = new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				JPLayer layer = imagePanel.getActiveLayer();
+				
+				imagePanel.removeLayer(layer);
+				
+			}
+		};
+		
+		deleteLayerButton.addActionListener(deleteLayerListener);
+		this.add(deleteLayerButton);
+	}
+	
+	private void initButtons(){
+		initColorButton();
+		initDeleteLayerButton();
 	}
 	
 	private void createColorSample(){

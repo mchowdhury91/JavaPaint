@@ -90,6 +90,7 @@ public class JPLayer {
 
 	public void makeActive(){
 		imagePanel.setActiveLayer(this);
+		imagePanel.getGUI().getStatusLabel().setText(name);
 	}
 
 	// TODO: Delete later

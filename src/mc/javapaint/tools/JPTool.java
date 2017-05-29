@@ -1,12 +1,12 @@
 package mc.javapaint.tools;
 
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.RenderingHints;
 import java.awt.RenderingHints.Key;
 import java.awt.Stroke;
-import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -21,6 +21,7 @@ public abstract class JPTool {
 	private Stroke stroke;
 	private int lastPointIndex;
 	public int id = 0;
+	
 	
 	public static final int ERASER = -1;
 	
@@ -38,6 +39,11 @@ public abstract class JPTool {
 		stroke = imagePanel.getStroke();
 		lastPointIndex = imagePanel.getLastPointIndex();
 	}
+	
+	public Cursor getCursor(){
+		return Cursor.getDefaultCursor();
+	}
+	
 	
 	public void draw(Point point, Graphics2D g){
 		imagePanel.update();

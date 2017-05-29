@@ -2,6 +2,7 @@ package mc.javapaint.tools;
 
 import java.awt.AlphaComposite;
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.RenderingHints;
@@ -101,6 +102,10 @@ public class EraserTool extends JPTool {
 //		}
 	}
 	
+	@Override
+	public Cursor getCursor(){		
+		return Cursor.getPredefinedCursor(Cursor.HAND_CURSOR);
+	}
 
 
 }
