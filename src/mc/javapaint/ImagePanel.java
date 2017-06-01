@@ -2,7 +2,6 @@ package mc.javapaint;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.Cursor;
 import java.awt.Graphics2D;
 import java.awt.GridBagLayout;
 import java.awt.Point;
@@ -97,6 +96,8 @@ public class ImagePanel extends JPanel implements Drawable {
 		
 		this.setBackground(Color.WHITE);
 		this.add(imageLabel);
+		
+		
 
 	}
 
@@ -201,7 +202,7 @@ public class ImagePanel extends JPanel implements Drawable {
 		BufferedImage tmpImage = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_ARGB);
 		JPLayer newLayer = new JPLayer("Layer " + layerNum, tmpImage, this);
 		newLayer.setLayerButton(layerButton);
-		newLayer.setPosition(layerNum);
+		newLayer.setPosition(layers.size());
 		layers.add(newLayer);
 
 	}
@@ -217,12 +218,24 @@ public class ImagePanel extends JPanel implements Drawable {
 		}
 		
 		if(getActiveLayer() == layer){
-			defaultLayer.makeActive();
+			int previousLayer = layer.getPosition() - 1;
+			if(previousLayer >= 0){
+				layers.get(previousLayer).getLayerButton().doClick();
+			}else{
+				defaultLayer.getLayerButton().doClick();				
+			}
 		}
 		
 		JButton layerButton = layer.getLayerButton();
 		
 		gui.getJPToolBarRight().removeLayerButton(layerButton);
+		
+		int layerPosition = layer.getPosition();
+		for(int i = layerPosition+1; i < layers.size(); i++){
+			JPLayer tmpLayer = layers.get(i);
+			tmpLayer.setPosition(tmpLayer.getPosition()-1);
+		}
+		
 		layers.remove(layer);
 		draw();
 	}

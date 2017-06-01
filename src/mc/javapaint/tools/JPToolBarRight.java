@@ -28,6 +28,7 @@ public class JPToolBarRight extends JToolBar{
 	private RectTool rectTool;
 	private OvalTool ovalTool;
 	private ActionListener toolListener;
+	private ComponentMover componentMover;
 	private static final Color SELECTED_LAYER_COLOR = Color.decode("#A5D6C2");
 	
 	private ImagePanel imagePanel;
@@ -40,6 +41,8 @@ public class JPToolBarRight extends JToolBar{
 		this.setFloatable(false);
 		this.imagePanel = imagePanel;
 
+		componentMover = new ComponentMover();
+		
 		drawTool = new DrawTool(imagePanel);
 		eraserTool = new EraserTool(imagePanel);
 		rectTool = new RectTool(imagePanel);
@@ -58,7 +61,8 @@ public class JPToolBarRight extends JToolBar{
 		this.add(newLayerButton);
 		
 		imagePanel.getDefaultLayer().setLayerButton(defaultLayerButton);
-		this.add(defaultLayerButton);		
+		this.add(defaultLayerButton);
+		componentMover.registerComponent(defaultLayerButton);
 	}
 	
 	public void initButtons(){
@@ -111,26 +115,25 @@ public class JPToolBarRight extends JToolBar{
 						action.undo();
 					}
 				}else if(e.getSource() == newLayerButton){
-					JButton newLayer = new JButton("Layer " + numLayers);
+					JButton newLayerButton = new JButton("Layer " + numLayers);
 					
-					lbg.add(newLayer);
-					layers.add(newLayer);
+					lbg.add(newLayerButton);
+					layers.add(newLayerButton);
 					addLayerButton();
-					newLayer.addActionListener(this);
-					imagePanel.addLayer(numLayers, newLayer);
-					
+					newLayerButton.addActionListener(this);
+					imagePanel.addLayer(numLayers, newLayerButton);
+					componentMover.registerComponent(newLayerButton);
 					numLayers++;
 				}else{
 					JButton tmpButton = (JButton) e.getSource();
 					String btnText = tmpButton.getText();
 					
 					imagePanel.getLayer(btnText).makeActive();
+//					System.out.println(imagePanel.getActiveLayer().getPosition());
 					tmpButton.setSelected(true);
 					//imagePanel.getGUI().getStatusLabel().setText(imagePanel.getLayer(index).getName());
 					
-					JButton srcButton = (JButton) e.getSource();
-					
-					setExclusiveSelected(lbg, srcButton.getText(), Color.decode("#A5D6C2"));
+					setExclusiveSelected(lbg, tmpButton.getText(), Color.decode("#A5D6C2"));
 				}
 				imagePanel.setActiveTool(activeTool);
 			}
@@ -180,8 +183,8 @@ public class JPToolBarRight extends JToolBar{
 	public void removeLayerButton(JButton layerButton){
 		this.remove(layerButton);
 		layers.remove(layerButton);
-		defaultLayerButton.setSelected(true);
-		defaultLayerButton.setBackground(SELECTED_LAYER_COLOR);
+//		defaultLayerButton.setSelected(true);
+//		defaultLayerButton.setBackground(SELECTED_LAYER_COLOR);
 		this.repaint();
 	}
 	
